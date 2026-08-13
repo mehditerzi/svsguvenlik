@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/svsguvenlikcom/public_html/
+    - rsync -a --delete --exclude='.git' --exclude='.cpanel.yml' --exclude='mail/mail-config.php' ./ $DEPLOYPATH

@@ -1,0 +1,29 @@
+DirectoryIndex index.html
+
+ErrorDocument 404 /404.html
+
+# PHP's error_log() writes here by default when no log path is configured —
+# never let it be fetched directly.
+<FilesMatch "^error_log$">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Content-hashed build assets never change under the same filename.
+  <FilesMatch "^.*\.(js|css|woff2?)$">
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|png|jpe?g|ico)$">
+    Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

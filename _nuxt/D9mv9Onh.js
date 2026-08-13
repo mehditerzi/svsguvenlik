@@ -1,0 +1,1 @@
+import{_ as e}from"./C82Y9GDx.js";function t(){let t=e(`menu-open`,()=>!1);return{open:t,toggle:()=>t.value=!t.value,close:()=>t.value=!1}}function n(){return e(`header-theme`,()=>`ink`)}export{t as n,n as t};
