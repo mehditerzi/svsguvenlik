@@ -2,6 +2,12 @@ DirectoryIndex index.html
 
 ErrorDocument 404 /404.html
 
+# PHP's error_log() writes here by default when no log path is configured —
+# never let it be fetched directly.
+<FilesMatch "^error_log$">
+  Require all denied
+</FilesMatch>
+
 <IfModule mod_expires.c>
   ExpiresActive On
 
