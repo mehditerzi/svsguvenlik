@@ -4,8 +4,10 @@ import { brand, sectors } from '~/data/site'
 
 useHead({ title: 'İletişim — SVS Shadow VIP Security' })
 
-const form = reactive({ name: '', company: '', mail: '', sector: sectors[0]!.title, note: '' })
+const form = reactive({ name: '', company: '', mail: '', sector: sectors[0]!.title, note: '', website: '' })
 const sent = ref(false)
+const sending = ref(false)
+const sendError = ref(false)
 const root = ref<HTMLElement | null>(null)
 
 useScene((_ctx, el) => {
@@ -23,10 +25,19 @@ useScene((_ctx, el) => {
   )
 }, root)
 
-const submit = () => {
-  // No backend in this build — the form validates and confirms locally.
-  if (!form.name || !form.mail) return
-  sent.value = true
+const submit = async () => {
+  if (!form.name || !form.mail || sending.value) return
+  sending.value = true
+  sendError.value = false
+  try {
+    const res = await $fetch<{ ok: boolean }>('/mail/send.php', { method: 'POST', body: form })
+    if (res?.ok) sent.value = true
+    else sendError.value = true
+  } catch {
+    sendError.value = true
+  } finally {
+    sending.value = false
+  }
 }
 </script>
 
@@ -64,9 +75,21 @@ const submit = () => {
             <textarea id="f-note" v-model="form.note" rows="4" />
           </div>
 
+          <!-- honeypot: hidden from real visitors, bots that fill every field trip it -->
+          <div class="frm__hp" aria-hidden="true">
+            <label for="f-website">Website</label>
+            <input id="f-website" v-model="form.website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
           <div class="frm__actions frm__field frm__field--wide">
-            <MotionMagneticButton label="Teklif isteği gönder" variant="solid" cursor="Gönder" />
+            <MotionMagneticButton
+              label="Teklif isteği gönder"
+              variant="solid"
+              cursor="Gönder"
+              :disabled="sending"
+            />
             <span v-if="sent" class="meta meta--brass">Talebiniz alındı — 5 iş günü içinde dönüş yapılacak.</span>
+            <span v-else-if="sendError" class="meta meta--err">Talebiniz gönderilemedi, lütfen tekrar deneyin.</span>
           </div>
         </form>
 
@@ -149,6 +172,19 @@ select {
   align-items: center;
   gap: 1.4rem;
   margin-top: 0.8rem;
+}
+
+.frm__hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.meta--err {
+  color: #b6462f;
 }
 
 .ctc__aside {
