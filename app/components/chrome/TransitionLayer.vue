@@ -100,10 +100,35 @@ onMounted(() => {
     .add(done, '-=0.42')
 })
 
+// Self-healing: if the GSAP tween never fires onComplete (a stalled rAF, a
+// tab-visibility hiccup, anything), the caller's own timeout only unblocks
+// Vue's transition state machine — the ink sheet would stay visually stuck
+// covering the screen forever. Race each tween against a timeout that snaps
+// straight to the end state, so the curtain always actually resolves.
+const settleOnce = (resolve: () => void) => {
+  let settled = false
+  return (forceEnd?: () => void, timeoutMs?: number) => {
+    const finish = () => {
+      if (settled) return
+      settled = true
+      resolve()
+    }
+    if (timeoutMs != null) {
+      setTimeout(() => {
+        if (settled) return
+        forceEnd?.()
+        finish()
+      }, timeoutMs)
+    }
+    return finish
+  }
+}
+
 // wire the curtain API used by the router hooks
 curtain.register({
   cover: (label) =>
     new Promise<void>((resolve) => {
+      const settle = settleOnce(resolve)
       stopScroll()
       gsap.set(slabs(), { yPercent: 100, autoAlpha: 0 })
       if (introDone.value && label) {
@@ -111,17 +136,19 @@ curtain.register({
         navShown.value = true
       }
       const o = { y: H + 40, bow: 26 }
+      const finish = settle(() => drawSheet(0, 0), 900)
       gsap.to(o, {
         y: 0,
         bow: 0,
         duration: 0.34,
         ease: 'power3.inOut',
         onUpdate: () => drawSheet(o.y, o.bow),
-        onComplete: () => resolve()
+        onComplete: finish
       })
     }),
   reveal: () =>
     new Promise<void>((resolve) => {
+      const settle = settleOnce(resolve)
       // Hand control back immediately: the new page plays its entrance while
       // the sheet is still lifting, instead of waiting for it to clear.
       startScroll()
@@ -129,13 +156,14 @@ curtain.register({
       navShown.value = false
 
       const o = { y: 0, bow: 0 }
+      const finish = settle(() => drawSheet(-(H + 40), -26), 1200)
       gsap.to(o, {
         y: -(H + 40),
         bow: -26,
         duration: 0.62,
         ease: 'expo.inOut',
         onUpdate: () => drawSheet(o.y, o.bow),
-        onComplete: () => resolve()
+        onComplete: finish
       })
     })
 })

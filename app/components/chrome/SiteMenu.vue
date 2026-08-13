@@ -49,6 +49,14 @@ onMounted(() => {
         tl?.timeScale(1).play()
         setTimeout(() => root.value?.querySelector<HTMLElement>('a[href]')?.focus(), 620)
       } else {
+        // aria-hidden gets set on this element right below (reactively, via
+        // the template binding) — if the link the user just clicked to
+        // navigate still has focus at that moment, the browser blocks the
+        // aria-hidden and logs a violation. Move focus out first so that
+        // can't happen.
+        if (root.value?.contains(document.activeElement)) {
+          (document.activeElement as HTMLElement | null)?.blur()
+        }
         tl?.timeScale(1.5).reverse()
         document.body.classList.remove('is-locked')
         startScroll()
@@ -95,7 +103,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="root" class="mnu" :aria-hidden="!menu.open.value">
+  <div ref="root" class="mnu" :aria-hidden="!menu.open.value" :inert="!menu.open.value">
     <div class="mnu__panel">
       <div class="mnu__grid shell">
         <nav class="mnu__list" aria-label="Tam ekran menü">
