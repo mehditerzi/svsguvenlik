@@ -69,7 +69,10 @@ try {
     $mailer->SMTPAuth = true;
     $mailer->Username = SMTP_USER;
     $mailer->Password = SMTP_PASS;
-    $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    // mail.mailc2b.com rejects STARTTLS on 587 ("TLS is not allowed") — confirmed
+    // by live test. Traffic to this SMTP host is unencrypted.
+    $mailer->SMTPSecure = '';
+    $mailer->SMTPAutoTLS = false;
     $mailer->CharSet = 'UTF-8';
 
     $mailer->setFrom(SMTP_USER, 'SVS Güvenlik Web Sitesi');
