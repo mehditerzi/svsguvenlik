@@ -380,6 +380,26 @@ export const services: Service[] = [
     ],
     image: '/media/service-05.webp',
     canvas: { variant: 'risk', seed: 17, speed: 0.95 }
+  },
+  {
+    n: '10',
+    title: 'Peyzaj & Bahçe Bakımı',
+    desc: 'Yeşil alan, çim saha ve dış mekân bakımını periyodik bir programla, tesis yönetiminden bağımsız da yürütebiliriz.',
+    detail:
+      'Peyzaj tek seferlik bir düzenleme değil, süregelen bir bakım işidir. Sulama, budama, çim biçimi ve mevsimlik dikim takvimini tesisin kullanım yoğunluğuna göre planlar; dış mekânın yıl boyunca aynı standardı korumasını sağlarız.',
+    points: [
+      'Çim biçimi ve sulama takvimi',
+      'Ağaç, çalı ve mevsimlik bitki bakımı',
+      'Dış mekân temizliği ve atık yönetimi',
+      'Sezonluk peyzaj yenileme planı'
+    ],
+    meta: [
+      { k: 'Kapsam', v: 'Yeşil alan & dış mekân' },
+      { k: 'Periyot', v: 'Haftalık / aylık program' },
+      { k: 'Model', v: 'Bağımsız veya entegre' }
+    ],
+    image: '/media/service-04.webp',
+    canvas: { variant: 'facility', seed: 152, speed: 1, mirror: true }
   }
 ]
 

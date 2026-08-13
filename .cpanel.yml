@@ -1,11 +1,16 @@
 ---
-# Runs automatically whenever this repo is pushed to the cPanel Git remote.
-# Fill in USER, and confirm the nodevenv path/Node version match what
-# "Setup Node.js App" shows you after creating the application.
+# Runs whenever this repo's "Pull or Deploy" is triggered from cPanel's Git
+# Version Control UI (Manage > Pull or Deploy). Shell access is disabled on
+# this account, so this never runs via `git push` over SSH — only via the
+# cPanel UI or its API, both of which run outside the restricted login shell.
+#
+# APPDIR / node version below must match what "Setup Node.js App" shows you
+# after creating the application (the "run this to enter the virtual
+# environment" command it gives you).
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/USER/svsguvenlik
-    - export NODEVENV=/home/USER/nodevenv/svsguvenlik/22/bin/activate
+    - export DEPLOYPATH=/home/svsguvenlikcom/APPDIR
+    - export NODEVENV=/home/svsguvenlikcom/nodevenv/APPDIR/22/bin/activate
     - /bin/bash -c "cd $DEPLOYPATH && source $NODEVENV && npm ci"
     - /bin/bash -c "cd $DEPLOYPATH && source $NODEVENV && npm run build"
     - /bin/mkdir -p $DEPLOYPATH/tmp

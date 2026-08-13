@@ -42,7 +42,7 @@ useHead({ title: 'Faaliyet Alanları — SVS Shadow VIP Security' })
     <section class="svl section on-ink stage">
       <div class="shell">
         <span class="meta meta--brass">Hizmet kataloğu</span>
-        <h2 class="display d-md svl__h">Dokuz hizmet, tek sözleşme.</h2>
+        <h2 class="display d-md svl__h">On hizmet, tek sözleşme.</h2>
       </div>
 
       <div class="svl__list shell">
