@@ -1,0 +1,236 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────────────────────────────────────────── reset + base */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html,
+body,
+h1, h2, h3, h4, h5, h6,
+p, figure, blockquote, dl, dd, ul, ol { margin: 0; padding: 0; }
+
+ul, ol { list-style: none; }
+
+:root {
+  --ink: #{$ink};
+  --ink-2: #{$ink-2};
+  --ink-3: #{$ink-3};
+  --paper: #{$paper};
+  --paper-2: #{$paper-2};
+  --brass: #{$brass};
+  --brass-lt: #{$brass-lt};
+  --steel: #{$steel};
+
+  --bg: var(--ink);
+  --fg: var(--paper);
+
+  --gut: clamp(20px, 4.4vw, 76px);
+  --rule: color-mix(in srgb, var(--fg) 16%, transparent);
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --font-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.45;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  overflow-x: clip;
+  transition: background-color 0.8s var(--ease), color 0.8s var(--ease);
+}
+
+body.is-locked { overflow: hidden; }
+
+img, video, canvas, svg { display: block; max-width: 100%; }
+img { -webkit-user-drag: none; user-select: none; }
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+::selection { background: var(--brass); color: var(--ink); }
+
+/* Hide the native cursor only where our custom one takes over — but never over
+   text fields, where the caret is the only cue you can actually type. */
+@include hover {
+  html.has-cursor,
+  html.has-cursor * { cursor: none !important; }
+
+  html.has-cursor input,
+  html.has-cursor textarea { cursor: text !important; }
+
+  html.has-cursor select,
+  html.has-cursor option { cursor: pointer !important; }
+}
+
+/* Keyboard users get a real ring; pointer users never see it. */
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Coarse pointers need a 44px target even when the type is small.
+   Only `min-height` here: an earlier version also forced `display: inline-flex`,
+   which silently overrode the layout of every button that lays itself out —
+   the service rows lost their grid and the copy collapsed beside the title. */
+@media (pointer: coarse) {
+  a,
+  button {
+    min-height: 44px;
+  }
+
+  /* lift only the plain inline links to a real target */
+  a.ftr__link,
+  a.ctc__link,
+  a.mnu__line,
+  .mnu__sectors a {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────── typography */
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.d-xl { font-size: clamp(3.4rem, 13.2vw, 15.5rem); }
+.d-lg { font-size: clamp(2.9rem, 9.4vw, 10.5rem); }
+.d-md { font-size: clamp(2.2rem, 5.6vw, 5.6rem); line-height: 0.94; letter-spacing: -0.036em; }
+.d-sm { font-size: clamp(1.6rem, 3.1vw, 3.05rem); line-height: 1.02; letter-spacing: -0.03em; }
+
+.lede {
+  font-size: clamp(1.05rem, 1.42vw, 1.5rem);
+  line-height: 1.34;
+  letter-spacing: -0.017em;
+  font-weight: 400;
+}
+
+.body-s {
+  font-size: clamp(0.94rem, 1.02vw, 1.06rem);
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--fg) 66%, transparent);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+}
+
+.meta--brass { color: var(--brass); }
+
+.serif-num {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 0.8;
+}
+
+/* ────────────────────────────────────────────────────────────────── layout */
+.shell { padding-inline: var(--gut); }
+
+.rule {
+  height: 1px;
+  width: 100%;
+  background: var(--rule);
+  transform-origin: left center;
+}
+
+.section { position: relative; }
+
+/* A clipping stage: every scene lives inside one so layers can overshoot. */
+.stage { position: relative; overflow: clip; }
+
+/* Masked line used by all text reveals.
+   The generous top padding matters: Turkish caps carry tall diacritics
+   (Ö, Ü, İ, Ğ) that a tight overflow box would decapitate. */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.2em;
+  margin-top: -0.2em;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+/* ───────────────────────────────────────────────────── theme inversion util */
+.on-paper {
+  --bg: var(--paper);
+  --fg: var(--ink);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.on-ink {
+  --bg: var(--ink);
+  --fg: var(--paper);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* ─────────────────────────────────────────────────────────── image grading */
+.plate {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-2);
+
+  img { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+}
+
+/* A single grade for every image on the site: pulled toward the ink palette,
+   contrast lifted, never darkened — the scrims above them do that job. */
+.plate--graded img {
+  filter: saturate(0.55) contrast(1.1) brightness(1.06);
+}
+
+.plate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 11, 13, 0) 40%, rgba(10, 11, 13, 0.4) 100%);
+  pointer-events: none;
+}
+
+.plate--flat::after { display: none; }
+
+/* Clear the fixed mobile action bar so it never covers the last line of a scene.
+   The footer sits outside <main>, and the bar hides there, so no gap is left. */
+@include tablet {
+  main {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

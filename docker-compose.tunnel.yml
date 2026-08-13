@@ -1,0 +1,30 @@
+# Publish the SVS Güvenlik site through the existing `edge-cloudflared` tunnel.
+#
+# The app joins `edge_net`, so cloudflared resolves it by container name.
+#
+# Prereq (one-time), Cloudflare Zero Trust -> Networks -> Tunnels ->
+# (this tunnel) -> Public Hostname, set the ingress Service to:
+#
+#     <app-host>  ->  http://svsguvenlik-app:3000
+#
+# Then:  docker compose -f docker-compose.tunnel.yml up -d --build
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: svsguvenlik-app:latest
+    container_name: svsguvenlik-app
+    restart: unless-stopped
+    environment:
+      NITRO_PORT: "3000"
+      NITRO_HOST: 0.0.0.0
+    expose:
+      - "3000"        # internal only; the tunnel provides public access
+    networks:
+      - edge_net      # cloudflared reaches the app here
+
+networks:
+  edge_net:
+    external: true

@@ -1,0 +1,12 @@
+---
+# Runs automatically whenever this repo is pushed to the cPanel Git remote.
+# Fill in USER, and confirm the nodevenv path/Node version match what
+# "Setup Node.js App" shows you after creating the application.
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/USER/svsguvenlik
+    - export NODEVENV=/home/USER/nodevenv/svsguvenlik/22/bin/activate
+    - /bin/bash -c "cd $DEPLOYPATH && source $NODEVENV && npm ci"
+    - /bin/bash -c "cd $DEPLOYPATH && source $NODEVENV && npm run build"
+    - /bin/mkdir -p $DEPLOYPATH/tmp
+    - /bin/touch $DEPLOYPATH/tmp/restart.txt

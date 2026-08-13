@@ -1,0 +1,19 @@
+// ─── Design tokens ────────────────────────────────────────────────────────────
+$ink:        #0A0B0D;
+$ink-2:      #101317;
+$ink-3:      #171B21;
+$paper:      #EDE9E1;
+$paper-2:    #DDD7CB;
+$brass:      #C08B3C;
+$brass-lt:   #E0B36A;
+$steel:      #6E7681;
+
+$bp-mobile:  640px;
+$bp-tablet:  1024px;
+$bp-desk:    1280px;
+
+@mixin mobile   { @media (max-width: #{$bp-mobile}) { @content; } }
+@mixin tablet   { @media (max-width: #{$bp-tablet}) { @content; } }
+@mixin desktop  { @media (min-width: #{$bp-tablet + 1px}) { @content; } }
+@mixin wide     { @media (min-width: 1600px) { @content; } }
+@mixin hover    { @media (hover: hover) and (pointer: fine) { @content; } }
