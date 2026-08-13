@@ -15,11 +15,17 @@ const NAV_LABELS: Record<string, string> = {
   '/iletisim': '04 — İletişim'
 }
 
+// Cover/reveal resolve on their own GSAP tween, but if anything ever keeps
+// either promise from settling, this ceiling still lets the transition
+// finish instead of leaving the curtain stuck shut indefinitely.
+const withTimeout = (p: Promise<void>, ms: number) =>
+  Promise.race([p, new Promise<void>((resolve) => setTimeout(resolve, ms))])
+
 const pageTransition = {
   name: 'page',
   mode: 'out-in' as const,
   async onLeave(_el: Element, done: () => void) {
-    await curtain.cover(NAV_LABELS[route.path])
+    await withTimeout(curtain.cover(NAV_LABELS[route.path]), 1500)
     done()
   },
   async onEnter(_el: Element, done: () => void) {
@@ -28,7 +34,7 @@ const pageTransition = {
     // requestScrollRefresh() collapses them all into one same-frame call
     // instead of walking every trigger once per scene.
     requestScrollRefresh()
-    await curtain.reveal()
+    await withTimeout(curtain.reveal(), 1500)
     done()
   }
 }
