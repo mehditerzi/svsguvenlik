@@ -1,0 +1,8 @@
+{
+  // Cloudflare Workers static assets — production hosting (moved off the local Docker/tunnel on 2026-10-22).
+  // Deploy: see CLAUDE.md → "Hosting".
+  "name": "svsguvenlik",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "assets": { "directory": "./.output/public", "not_found_handling": "none", "html_handling": "drop-trailing-slash" }
+}

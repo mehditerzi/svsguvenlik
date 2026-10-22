@@ -25,3 +25,5 @@ logs
 
 # Real mail credentials — created directly on the server, never committed
 public/mail/mail-config.php
+
+.wrangler/
